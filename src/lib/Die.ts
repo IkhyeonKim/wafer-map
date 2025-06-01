@@ -15,14 +15,14 @@ export class Die {
 	y: number
 	isDefective: boolean
 	defectInfo?: DefectInfo
-	defectSize: number
+	defectSize?: number
 
 	constructor(
 		id: string,
 		x: number,
 		y: number,
 		isDefective: boolean = false,
-		defectSize: number,
+		defectSize?: number,
 		defectInfo?: DefectInfo
 	) {
 		this.id = id
@@ -34,9 +34,10 @@ export class Die {
 		if (this.isDefective && defectInfo) {
 			this.defectInfo = defectInfo
 		} else if (this.isDefective && !defectInfo) {
-			console.warn(
-				`Die ${this.id} is marked as defective, but no defectInfo was provided.`
-			)
+			// console.warn(
+			// 	`Die ${this.id} is marked as defective, but no defectInfo was provided.`
+			// )
+            this.defectInfo = undefined
 		} else {
 			this.defectInfo = undefined
 		}

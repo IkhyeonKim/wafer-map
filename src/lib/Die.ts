@@ -16,6 +16,7 @@ export class Die {
 	isDefective: boolean
 	defectInfo?: DefectInfo
 	defectSize?: number
+	dieMap?: Map<number, number>
 
 	constructor(
 		id: string,

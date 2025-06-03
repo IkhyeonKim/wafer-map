@@ -10,7 +10,7 @@ export default async function WaferMap() {
 	return (
 		<section>
 			<div>Wafer map</div>
-			<WaferCanvas />
+			<WaferCanvas dieInfo={waferData} />
 		</section>
 	)
 }

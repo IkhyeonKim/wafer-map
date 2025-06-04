@@ -8,15 +8,56 @@ export type WaferCanvasProps = {
 	dieInfo: Die[]
 }
 
+const CANVAS_SIZE = 600
+const WAFER_RADIUS = 300
+const GAP_WIDTH = 1
+
 export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 	const svgElement = useRef<SVGSVGElement>(null)
 
 	if (!dieInfo) return <svg />
 
+	const totalDie = dieInfo.length
+	const lastDie = dieInfo[totalDie - 1]
+	const { x: mapSize } = lastDie
+
+	// const singleDieWidth = 3
+	const singleDieWidth = (CANVAS_SIZE - mapSize * GAP_WIDTH) / mapSize
+
+	console.log({ lastDie, singleDieWidth })
+
 	return (
-		<svg ref={svgElement} width="500" height="350">
+		<svg
+			ref={svgElement}
+			width={"600px"}
+			height={"600px"}
+			viewBox="0 0 600 600"
+		>
+			<circle
+				cx={WAFER_RADIUS}
+				cy={WAFER_RADIUS}
+				r={WAFER_RADIUS}
+				fill="#f1f1f1"
+			/>
 			{dieInfo.map((die) => {
-				return <SingleDie key={die.id} {...die} />
+				const positionX =
+					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
+				const positionY =
+					die.y === 0 ? 0 : die.y * singleDieWidth + die.y * GAP_WIDTH
+				return (
+					<SingleDie
+						width={singleDieWidth}
+						height={singleDieWidth}
+						space={GAP_WIDTH}
+						key={die.id}
+						positionX={positionX}
+						positionY={positionY}
+						waferRadius={WAFER_RADIUS}
+						cx={WAFER_RADIUS}
+						cy={WAFER_RADIUS}
+						{...die}
+					/>
+				)
 			})}
 		</svg>
 	)

@@ -5,7 +5,7 @@ function makeMockupData(): Die[] {
 
 	const mapSize = getMapSize()
 
-	const maxDefectCount = Math.floor(mapSize / 3)
+	const maxDefectCount = mapSize
 	let currentDefectCount = 0
 
 	console.log({ mapSize, maxDefectCount })

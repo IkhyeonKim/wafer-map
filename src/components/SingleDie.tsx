@@ -1,4 +1,5 @@
 import { Die } from "@/lib/Die"
+import { useDieStore } from "@/stores/die-store-provider"
 
 export type SingleDieProps = Die & {
 	width: number
@@ -23,20 +24,14 @@ export default function SingleDie(props: SingleDieProps) {
 		width,
 		height,
 		space,
-        isDefective,
+		isDefective,
 		waferRadius,
 		cx,
 		cy,
+		isSelected,
 	} = props
-	// corner1 = (rectangle.x, rectangle.y)
-	// corner2 = (rectangle.x + rectangle.width, rectangle.y)
-	// corner3 = (rectangle.x, rectangle.y + rectangle.height)
-	// corner4 = (rectangle.x + rectangle.width, rectangle.y + rectangle.height)
-	//
-	// is_corner1_in = SQRT((corner1.x - circle_cx)^2 + (corner1.y - circle_cy)^2) <= circle_radius
-	// is_corner2_in = SQRT((corner2.x - circle_cx)^2 + (corner2.y - circle_cy)^2) <= circle_radius
-	// is_corner3_in = SQRT((corner3.x - circle_cx)^2 + (corner3.y - circle_cy)^2) <= circle_radius
-	// is_corner4_in = SQRT((corner4.x - circle_cx)^2 + (corner4.y - circle_cy)^2) <= circle_radius
+
+	const { selectDie } = useDieStore((state) => state)
 
 	const leftTopX = positionX
 	const leftTopY = positionY
@@ -74,7 +69,8 @@ export default function SingleDie(props: SingleDieProps) {
 					y={positionY}
 					width={width}
 					height={height}
-					fill={isDefective ? "#de1a1a" : "#c0c0c0"}
+					fill={isSelected ? "#341ade" : "#c0c0c0"}
+					onClick={() => selectDie(id)}
 				/>
 			) : (
 				<></>

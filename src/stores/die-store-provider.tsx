@@ -1,42 +1,40 @@
 "use client"
 
 import { type ReactNode, createContext, useContext, useRef } from "react"
-import { CounterStore, createCounterStore, initCounterStore } from "./die-store"
+import { DieStore, createDieStore, initDieStore } from "./die-store"
 import { useStore } from "zustand"
 
-export type CounterStoreApi = ReturnType<typeof createCounterStore>
+export type DieStoreApi = ReturnType<typeof createDieStore>
 
-export const CounterStoreContext = createContext<CounterStoreApi | undefined>(
+export const DieStoreContext = createContext<DieStoreApi | undefined>(
 	undefined
 )
 
-export interface CounterStoreProviderProps {
+export interface DieStoreProviderProps {
 	children: ReactNode
 }
 
-export const CounterStoreProvider = ({
+export const DieStoreProvider = ({
 	children,
-}: CounterStoreProviderProps) => {
-	const storeRef = useRef<CounterStoreApi | null>(null)
+}: DieStoreProviderProps) => {
+	const storeRef = useRef<DieStoreApi | null>(null)
 	if (storeRef.current === null) {
-		storeRef.current = createCounterStore(initCounterStore())
+		storeRef.current = createDieStore(initDieStore())
 	}
 
 	return (
-		<CounterStoreContext.Provider value={storeRef.current}>
+		<DieStoreContext.Provider value={storeRef.current}>
 			{children}
-		</CounterStoreContext.Provider>
+		</DieStoreContext.Provider>
 	)
 }
 
-export const useCounterStore = <T,>(
-	selector: (store: CounterStore) => T
-): T => {
-	const counterStoreContext = useContext(CounterStoreContext)
+export const useDieStore = <T,>(selector: (store: DieStore) => T): T => {
+	const dieStoreContext = useContext(DieStoreContext)
 
-	if (!counterStoreContext) {
-		throw new Error(`useCounterStore must be used within DieStoreProvider`)
+	if (!dieStoreContext) {
+		throw new Error(`useDieStore must be used within DieStoreProvider`)
 	}
 
-	return useStore(counterStoreContext, selector)
+	return useStore(dieStoreContext, selector)
 }

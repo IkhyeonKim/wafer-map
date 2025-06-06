@@ -3,6 +3,7 @@
 import { Die } from "@/lib/Die"
 import { useEffect, useRef } from "react"
 import SingleDie from "./SingleDie"
+import { useDieStore } from "@/stores/die-store-provider"
 
 export type WaferCanvasProps = {
 	dieInfo: Die[]
@@ -14,6 +15,11 @@ const GAP_WIDTH = 1
 
 export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 	const svgElement = useRef<SVGSVGElement>(null)
+	const { initDie, dies } = useDieStore((state) => state)
+
+	useEffect(() => {
+		initDie(dieInfo)
+	}, [dieInfo])
 
 	if (!dieInfo) return <svg />
 
@@ -39,7 +45,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				r={WAFER_RADIUS}
 				fill="#f1f1f1"
 			/>
-			{dieInfo.map((die) => {
+			{dies.map((die) => {
 				const positionX =
 					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
 				const positionY =

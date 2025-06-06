@@ -14,6 +14,7 @@ export class Die {
 	x: number
 	y: number
 	isDefective: boolean
+	isSelected: boolean
 	defectInfo?: DefectInfo
 	defectSize?: number
 	dieMap?: Map<number, number>
@@ -31,6 +32,7 @@ export class Die {
 		this.y = y
 		this.isDefective = isDefective
 		this.defectSize = defectSize
+		this.isSelected = false
 
 		if (this.isDefective && defectInfo) {
 			this.defectInfo = defectInfo
@@ -38,7 +40,7 @@ export class Die {
 			// console.warn(
 			// 	`Die ${this.id} is marked as defective, but no defectInfo was provided.`
 			// )
-            this.defectInfo = undefined
+			this.defectInfo = undefined
 		} else {
 			this.defectInfo = undefined
 		}

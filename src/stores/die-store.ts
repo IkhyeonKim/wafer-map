@@ -1,30 +1,51 @@
-import { createStore, create } from "zustand"
+import { Die } from "@/lib/Die"
+import { createStore } from "zustand"
 
-export type CounterState = {
-	count: number
+export type DiesState = {
+	dies: Die[]
 }
 
-export type CounterActions = {
-	decrement: () => void
-	increment: () => void
+export type DieActions = {
+	// increment: () => void
+	selectDie: (dieId: string) => void
+	initDie: (dies: Die[]) => void
 }
 
-export type CounterStore = CounterState & CounterActions
+export type DieStore = DiesState & DieActions
 
-export const defaultInitState: CounterState = {
-	count: 0,
+export const defaultInitState: DiesState = {
+	dies: [],
 }
 
-export const initCounterStore = (): CounterState => {
-	return { count: new Date().getFullYear() }
+export const initDieStore = (): DiesState => {
+	return { dies: [] }
 }
 
-export const createCounterStore = (
-	initState: CounterState = defaultInitState
-) => {
-	return createStore<CounterStore>()((set) => ({
+export const createDieStore = (initState: DiesState = defaultInitState) => {
+	return createStore<DieStore>()((set) => ({
 		...initState,
-		decrement: () => set((state) => ({ count: state.count - 1 })),
-		increment: () => set((state) => ({ count: state.count + 1 })),
+		// decrement: () => set((state) => ({ count: state.count - 1 })),
+		selectDie: (dieId: string) =>
+			set((state) => ({
+				dies: state.dies.map((die) => {
+					console.log("@@@@@", {
+						target: dieId === die.id,
+						dieId,
+						currentDie: die.id,
+						isSelected: !die.isSelected,
+						die,
+					})
+					return dieId === die.id
+						? {
+								...die,
+								isSelected: !die.isSelected,
+						  }
+						: die
+				}),
+			})),
+		initDie: (dies: Die[]) =>
+			set(() => ({
+				dies: [...dies],
+			})),
 	}))
 }

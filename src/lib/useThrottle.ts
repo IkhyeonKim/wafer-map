@@ -21,21 +21,22 @@ export function useThrottle<F extends (...args: any[]) => void>(
 		}
 	}, [])
 
-	const throttleCallback = useCallback((...args: F[]) => {
-		if (isThrottleRef.current) {
-			return
-		}
+	const throttleCallback = useCallback(
+		(...args: Parameters<F>) => {
+			if (isThrottleRef.current) {
+				return
+			}
 
-		// Fire the callback immediately.
-		callbackRef.current(...args)
-		// Enter the cooldown period.
-		isThrottleRef.current = true
+			callbackRef.current(...args)
 
-		// Set a timer to end the cooldown period.
-		timeoutRef.current = setTimeout(() => {
-			isThrottleRef.current = false
-		}, delay)
-	}, [delay])
+			isThrottleRef.current = true
+
+			timeoutRef.current = setTimeout(() => {
+				isThrottleRef.current = false
+			}, delay)
+		},
+		[delay]
+	)
 
 	return throttleCallback
 }

@@ -4,6 +4,7 @@ import { Die } from "@/lib/Die"
 import { useEffect, useRef } from "react"
 import SingleDie from "./SingleDie"
 import { useDieStore } from "@/stores/die-store-provider"
+import Zoomable from "./Zoomable"
 
 export type WaferCanvasProps = {
 	dieInfo: Die[]
@@ -33,19 +34,14 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 	console.log({ lastDie, singleDieWidth })
 
 	return (
-		<svg
-			ref={svgElement}
-			width={"600px"}
-			height={"600px"}
-			viewBox="0 0 600 600"
-		>
+		<Zoomable width={600} height={600} viewBox="0 0 600 600">
 			<circle
 				cx={WAFER_RADIUS}
 				cy={WAFER_RADIUS}
 				r={WAFER_RADIUS}
 				fill="#f1f1f1"
 			/>
-			{dies.map((die) => {
+			{/* {dies.map((die) => {
 				const positionX =
 					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
 				const positionY =
@@ -64,7 +60,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 						{...die}
 					/>
 				)
-			})}
-		</svg>
+			})} */}
+		</Zoomable>
 	)
 }

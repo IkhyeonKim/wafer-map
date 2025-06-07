@@ -28,13 +28,6 @@ export const createDieStore = (initState: DiesState = defaultInitState) => {
 		selectDie: (dieId: string) =>
 			set((state) => ({
 				dies: state.dies.map((die) => {
-					console.log("@@@@@", {
-						target: dieId === die.id,
-						dieId,
-						currentDie: die.id,
-						isSelected: !die.isSelected,
-						die,
-					})
 					return dieId === die.id
 						? {
 								...die,

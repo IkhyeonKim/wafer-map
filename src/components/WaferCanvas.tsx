@@ -41,7 +41,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				r={WAFER_RADIUS}
 				fill="#f1f1f1"
 			/>
-			{/* {dies.map((die) => {
+			{dies.map((die) => {
 				const positionX =
 					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
 				const positionY =
@@ -60,7 +60,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 						{...die}
 					/>
 				)
-			})} */}
+			})}
 		</Zoomable>
 	)
 }

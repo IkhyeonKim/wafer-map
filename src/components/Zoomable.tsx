@@ -1,12 +1,5 @@
 import { useThrottle } from "@/lib/useThrottle"
-import {
-	ReactNode,
-	useCallback,
-	useEffect,
-	useId,
-	useRef,
-	useState,
-} from "react"
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 export type ZoomableProp = {
 	children: ReactNode
@@ -23,43 +16,45 @@ export default function Zoomable({
 	height,
 	viewBox,
 }: ZoomableProp) {
-	// TODO
-	// 1. panning
-	//  - mouse
-	// 2. zooming
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
 	const isPanning = useRef<Boolean>(false)
 	const [coord, setCoord] = useState<MouseCoordination>({
 		clientX: 0,
 		clientY: 0,
 	})
+	const [scale, setScale] = useState<number>(600)
 
 	const handleMouseMove = useCallback((ev: MouseEvent) => {
 		if (!isPanning.current) return
-		// console.log("Mouse move", ev.clientX, ev.clientY)
+
 		setCoord({
-			clientX: ev.clientX - Math.floor(ev.clientX / 1.3),
-			clientY: ev.clientY - Math.floor(ev.clientY / 1.3),
+			clientX: ev.clientX - Math.floor(ev.clientX / 2),
+			clientY: ev.clientY - Math.floor(ev.clientY / 2),
 		})
 	}, [])
-	const mouseMove = useThrottle((ev: MouseEvent) => handleMouseMove(ev), 50)
+	const mouseMove = useThrottle((ev: MouseEvent) => handleMouseMove(ev), 5)
+
+	const handleWheel = useCallback((ev: WheelEvent) => {
+		// Get this code from mdn
+		// scale += event.deltaY * -0.01;
+		setScale((preScale) => {
+			const newScale = preScale + ev.deltaY * -1
+
+			// min scale is 100 and max is 600
+			const restrictScale = Math.min(Math.max(100, newScale), 600)
+			return restrictScale
+		})
+	}, [])
+	const wheel = useThrottle((ev: WheelEvent) => handleWheel(ev), 10)
 
 	useEffect(() => {
 		function mouseDown(ev: MouseEvent) {
 			isPanning.current = true
-			// setCoord({
-			// 	clientX: ev.clientX,
-			// 	clientY: ev.clientY,
-			// })
-			console.log("Mouse down", ev)
 		}
 
 		function mouseUp(ev: MouseEvent) {
 			isPanning.current = false
-			console.log("Mouse up", ev)
 		}
-
-		console.log("Hiiii")
 
 		if (zoomContainerRef.current) {
 			zoomContainerRef.current.addEventListener("mousemove", (ev) =>
@@ -71,6 +66,9 @@ export default function Zoomable({
 			zoomContainerRef.current.addEventListener("mouseup", (ev: MouseEvent) =>
 				mouseUp(ev)
 			)
+			zoomContainerRef.current.addEventListener("wheel", (ev: WheelEvent) =>
+				wheel(ev)
+			)
 		}
 
 		return () => {
@@ -80,18 +78,17 @@ export default function Zoomable({
 				)
 				zoomContainerRef.current.removeEventListener("mousedown", mouseDown)
 				zoomContainerRef.current.removeEventListener("mouseup", mouseUp)
+				zoomContainerRef.current.removeEventListener("wheel", wheel)
 			}
 		}
-	}, [mouseMove])
-
-	console.log({ coord })
+	}, [mouseMove, wheel])
 
 	return (
 		<svg
 			ref={zoomContainerRef}
 			width={width}
 			height={height}
-			viewBox={`${coord.clientX} ${coord.clientY} 600 600`}
+			viewBox={`${coord.clientX} ${coord.clientY} ${scale} ${scale}`}
 		>
 			{children}
 		</svg>

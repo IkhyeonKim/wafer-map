@@ -25,7 +25,7 @@ export default function Zoomable({
 }: ZoomableProp) {
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
 	const isPanningRef = useRef<Boolean>(false)
-    const [isPanning, setIsPanning] = useState<Boolean>(false)
+	const [isPanning, setIsPanning] = useState<Boolean>(false)
 	const panStart = useRef<MouseCoordination>({
 		clientX: 0,
 		clientY: 0,
@@ -86,7 +86,7 @@ export default function Zoomable({
 	const wheel = useThrottle((ev: WheelEvent) => handleWheel(ev), 10)
 
 	const handleMouseDown = (ev: MouseEvent) => {
-        setIsPanning(true)
+		setIsPanning(true)
 		isPanningRef.current = true
 		panStart.current = {
 			clientX: ev.clientX,
@@ -102,11 +102,11 @@ export default function Zoomable({
 	useEffect(() => {
 		function mouseLeave() {
 			isPanningRef.current = false
-            setIsPanning(false)
+			setIsPanning(false)
 		}
 		function mouseUp(ev: MouseEvent) {
 			isPanningRef.current = false
-            setIsPanning(false)
+			setIsPanning(false)
 		}
 
 		if (zoomContainerRef.current) {

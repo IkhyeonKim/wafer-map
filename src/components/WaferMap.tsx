@@ -6,7 +6,7 @@ export default async function WaferMap() {
 	const waferData = await data.json()
 
 	return (
-		<section className="h-full flex flex-col border border-gray-300">
+		<section className="h-full flex flex-col border border-gray-300 items-center">
 			<div>Wafer map</div>
 			<WaferCanvas dieInfo={waferData} />
 		</section>

@@ -24,7 +24,6 @@ export default function Zoomable({
 	viewBox,
 }: ZoomableProp) {
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
-	const isPanningRef = useRef<Boolean>(false)
 	const [isPanning, setIsPanning] = useState<Boolean>(false)
 	const panStart = useRef<MouseCoordination>({
 		clientX: 0,
@@ -42,18 +41,21 @@ export default function Zoomable({
 		scale: 1,
 	})
 
-	const handleMouseMove = useCallback((ev: MouseEvent) => {
-		if (!isPanningRef.current) return
+	const handleMouseMove = useCallback(
+		(ev: MouseEvent) => {
+			if (!isPanning) return
 
-		const dx = ev.clientX - panStart.current.clientX
-		const dy = ev.clientY - panStart.current.clientY
+			const dx = ev.clientX - panStart.current.clientX
+			const dy = ev.clientY - panStart.current.clientY
 
-		setTransform((prev) => ({
-			...prev,
-			translateX: transformStartRef.current.translateX + dx,
-			translateY: transformStartRef.current.translateY + dy,
-		}))
-	}, [])
+			setTransform((prev) => ({
+				...prev,
+				translateX: transformStartRef.current.translateX + dx,
+				translateY: transformStartRef.current.translateY + dy,
+			}))
+		},
+		[isPanning]
+	)
 	const mouseMove = useThrottle((ev: MouseEvent) => handleMouseMove(ev), 5)
 
 	const handleWheel = useCallback((ev: WheelEvent) => {
@@ -85,9 +87,8 @@ export default function Zoomable({
 	}, [])
 	const wheel = useThrottle((ev: WheelEvent) => handleWheel(ev), 10)
 
-	const handleMouseDown = (ev: MouseEvent) => {
+	const handleMouseDown = useCallback((ev: MouseEvent) => {
 		setIsPanning(true)
-		isPanningRef.current = true
 		panStart.current = {
 			clientX: ev.clientX,
 			clientY: ev.clientY,
@@ -97,51 +98,41 @@ export default function Zoomable({
 			translateY: transform.translateY,
 			scale: transform.scale,
 		}
-	}
+	}, [])
+
+	const handleMouseUp = useCallback((ev: MouseEvent) => {
+		setIsPanning(false)
+	}, [])
+
+	const handleMouseLeave = useCallback(() => {
+		setIsPanning(false)
+	}, [])
 
 	useEffect(() => {
-		function mouseLeave() {
-			isPanningRef.current = false
-			setIsPanning(false)
-		}
-		function mouseUp(ev: MouseEvent) {
-			isPanningRef.current = false
-			setIsPanning(false)
-		}
-
 		if (zoomContainerRef.current) {
-			zoomContainerRef.current.addEventListener("mousemove", (ev) =>
-				mouseMove(ev)
-			)
-			zoomContainerRef.current.addEventListener("mousedown", (ev: MouseEvent) =>
-				handleMouseDown(ev)
-			)
-			zoomContainerRef.current.addEventListener("mouseup", (ev: MouseEvent) =>
-				mouseUp(ev)
-			)
-			zoomContainerRef.current.addEventListener("mouseleave", () =>
-				mouseLeave()
-			)
-			zoomContainerRef.current.addEventListener("wheel", (ev: WheelEvent) =>
-				wheel(ev)
-			)
+			zoomContainerRef.current.addEventListener("mousemove", mouseMove)
+			zoomContainerRef.current.addEventListener("mousedown", handleMouseDown)
+			zoomContainerRef.current.addEventListener("mouseup", handleMouseUp)
+			zoomContainerRef.current.addEventListener("mouseleave", handleMouseLeave)
+			zoomContainerRef.current.addEventListener("wheel", wheel)
 		}
 
 		return () => {
 			if (zoomContainerRef.current) {
-				zoomContainerRef.current.removeEventListener("mousemove", (ev) =>
-					mouseMove(ev)
-				)
+				zoomContainerRef.current.removeEventListener("mousemove", mouseMove)
 				zoomContainerRef.current.removeEventListener(
 					"mousedown",
 					handleMouseDown
 				)
-				zoomContainerRef.current.removeEventListener("mouseup", mouseUp)
-				zoomContainerRef.current.removeEventListener("mouseleave", mouseLeave)
+				zoomContainerRef.current.removeEventListener("mouseup", handleMouseUp)
+				zoomContainerRef.current.removeEventListener(
+					"mouseleave",
+					handleMouseLeave
+				)
 				zoomContainerRef.current.removeEventListener("wheel", wheel)
 			}
 		}
-	}, [mouseMove, wheel, handleMouseDown])
+	}, [mouseMove, wheel, handleMouseDown, handleMouseUp, handleMouseLeave])
 
 	return (
 		<svg
@@ -149,7 +140,7 @@ export default function Zoomable({
 			width={width}
 			height={height}
 			viewBox={`0 0 ${INITIAL_SCALE} ${INITIAL_SCALE}`}
-			className={isPanning ? "cursor-grabbing" : "cursor-grab"}
+			className={isPanning ? "cursor-grabbing rounded-xl bg-slate-100" : "cursor-grab rounded-xl bg-slate-100"}
 		>
 			<g
 				// transform: matrix(scaleX, skewY, skewX, scaleY, translateX, translateY);
@@ -157,7 +148,7 @@ export default function Zoomable({
 			>
 				{children}
 			</g>
-			<rect width={width} height={height} className={"fill-transparent"} />
+			{/* <rect width={width} height={height} className={"fill-transparent"} /> */}
 		</svg>
 	)
 }

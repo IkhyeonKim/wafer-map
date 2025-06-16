@@ -15,7 +15,6 @@ const WAFER_RADIUS = 300
 const GAP_WIDTH = 1
 
 export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
-	const svgElement = useRef<SVGSVGElement>(null)
 	const { initDie, dies } = useDieStore((state) => state)
 
 	useEffect(() => {
@@ -39,7 +38,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				cx={WAFER_RADIUS}
 				cy={WAFER_RADIUS}
 				r={WAFER_RADIUS}
-				fill="#f1f1f1"
+				fill="#ffffff"
 			/>
 			{dies.map((die) => {
 				const positionX =

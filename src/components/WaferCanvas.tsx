@@ -1,9 +1,7 @@
 "use client"
 
 import { Die } from "@/lib/Die"
-import { useEffect, useRef } from "react"
-import SingleDie from "./SingleDie"
-import { useDieStore } from "@/stores/die-store-provider"
+import SingleDie, { DieRenderingInfo } from "./SingleDie"
 import Zoomable from "./Zoomable"
 
 export type WaferCanvasProps = {
@@ -15,11 +13,6 @@ const WAFER_RADIUS = 300
 const GAP_WIDTH = 1
 
 export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
-	const { initDie, dies } = useDieStore((state) => state)
-
-	useEffect(() => {
-		initDie(dieInfo)
-	}, [dieInfo])
 
 	if (!dieInfo) return <svg />
 
@@ -40,23 +33,28 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				r={WAFER_RADIUS}
 				fill="#ffffff"
 			/>
-			{dies.map((die) => {
+			{dieInfo.map((die) => {
 				const positionX =
 					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
 				const positionY =
 					die.y === 0 ? 0 : die.y * singleDieWidth + die.y * GAP_WIDTH
+
+				const renderingInfo: DieRenderingInfo = {
+					width: singleDieWidth,
+					height: singleDieWidth,
+					space: GAP_WIDTH,
+					positionX,
+					positionY,
+					waferRadius: WAFER_RADIUS,
+					cx: WAFER_RADIUS,
+					cy: WAFER_RADIUS,
+				}
+
 				return (
 					<SingleDie
-						width={singleDieWidth}
-						height={singleDieWidth}
-						space={GAP_WIDTH}
 						key={die.id}
-						positionX={positionX}
-						positionY={positionY}
-						waferRadius={WAFER_RADIUS}
-						cx={WAFER_RADIUS}
-						cy={WAFER_RADIUS}
-						{...die}
+						renderingInfo={renderingInfo}
+						dieInfo={{ ...die }}
 					/>
 				)
 			})}

@@ -1,7 +1,9 @@
 import { Die } from "@/lib/Die"
-import { useDieStore } from "@/stores/die-store-provider"
+import { useEffect, useMemo } from "react"
+import { atom, useAtom } from "jotai"
+import { dieAtomFamily } from "@/lib/useDies"
 
-export type SingleDieProps = Die & {
+export type DieRenderingInfo = {
 	width: number
 	height: number
 	space: number
@@ -12,26 +14,41 @@ export type SingleDieProps = Die & {
 	cy: number
 }
 
+export type SingleDieProps = {
+	dieInfo: Die
+	renderingInfo: DieRenderingInfo
+}
+
 function calcHypotenuse(a: number, b: number) {
 	return Math.sqrt(a * a + b * b)
 }
 
 export default function SingleDie(props: SingleDieProps) {
-	const {
-		id,
-		positionX,
-		positionY,
-		width,
-		height,
-		space,
-		isDefective,
-		waferRadius,
-		cx,
-		cy,
-		isSelected,
-	} = props
+	const { renderingInfo, dieInfo } = props
 
-	const { selectDie } = useDieStore((state) => state)
+	const { positionX, positionY, width, height, space, waferRadius, cx, cy } =
+		renderingInfo
+
+	const { id } = dieInfo
+
+	const dieAtom = useMemo(
+		() =>
+			atom(
+				(get) => {
+					return get(dieAtomFamily(dieInfo))
+				},
+				(get, set) => {
+					const prev = get(dieAtomFamily(dieInfo))
+					set(dieAtomFamily(dieInfo), { ...prev, isSelected: !prev.isSelected })
+				}
+			),
+
+		[dieInfo]
+	)
+
+	const [myDie, selectDie] = useAtom(dieAtom)
+
+	const { isSelected } = myDie
 
 	const leftTopX = positionX
 	const leftTopY = positionY
@@ -60,6 +77,12 @@ export default function SingleDie(props: SingleDieProps) {
 		isLeftBottomCornerIn &&
 		isRightBottomCornerIn
 
+	useEffect(() => {
+		return () => {
+			// TODO: remove atom
+		}
+	}, [])
+
 	return (
 		<>
 			{isAllCornerIn ? (
@@ -70,7 +93,7 @@ export default function SingleDie(props: SingleDieProps) {
 					width={width}
 					height={height}
 					fill={isSelected ? "#341ade" : "#c0c0c0"}
-					onClick={() => selectDie(id)}
+					onClick={() => selectDie()}
 				/>
 			) : (
 				<></>

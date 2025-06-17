@@ -21,10 +21,10 @@ export default function Zoomable({
 	children,
 	width,
 	height,
-	viewBox,
+	// viewBox,
 }: ZoomableProp) {
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
-	const [isPanning, setIsPanning] = useState<Boolean>(false)
+	const [isPanning, setIsPanning] = useState<boolean>(false)
 	const panStart = useRef<MouseCoordination>({
 		clientX: 0,
 		clientY: 0,
@@ -98,9 +98,9 @@ export default function Zoomable({
 			translateY: transform.translateY,
 			scale: transform.scale,
 		}
-	}, [])
+	}, [transform])
 
-	const handleMouseUp = useCallback((ev: MouseEvent) => {
+	const handleMouseUp = useCallback(() => {
 		setIsPanning(false)
 	}, [])
 
@@ -140,10 +140,13 @@ export default function Zoomable({
 			width={width}
 			height={height}
 			viewBox={`0 0 ${INITIAL_SCALE} ${INITIAL_SCALE}`}
-			className={isPanning ? "cursor-grabbing rounded-xl bg-slate-100" : "cursor-grab rounded-xl bg-slate-100"}
+			className={
+				isPanning
+					? "cursor-grabbing rounded-xl bg-slate-100"
+					: "cursor-grab rounded-xl bg-slate-100"
+			}
 		>
 			<g
-				// transform: matrix(scaleX, skewY, skewX, scaleY, translateX, translateY);
 				transform={`matrix(${transform.scale} 0 0 ${transform.scale} ${transform.translateX} ${transform.translateY})`}
 			>
 				{children}

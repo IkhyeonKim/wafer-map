@@ -4,7 +4,6 @@ export type DefectInfo = {
 	description: string
 }
 
-export type DieType = {}
 
 /**
  * Represents a single die on a wafer.

@@ -122,27 +122,29 @@ ZoomableProp) {
 	}, [])
 
 	useEffect(() => {
-		if (zoomContainerRef.current) {
-			zoomContainerRef.current.addEventListener("mousemove", mouseMove)
-			zoomContainerRef.current.addEventListener("mousedown", handleMouseDown)
-			zoomContainerRef.current.addEventListener("mouseup", handleMouseUp)
-			zoomContainerRef.current.addEventListener("mouseleave", handleMouseLeave)
-			zoomContainerRef.current.addEventListener("wheel", wheel)
+		const svgElement = zoomContainerRef.current
+
+		if (svgElement) {
+			svgElement.addEventListener("mousemove", mouseMove)
+			svgElement.addEventListener("mousedown", handleMouseDown)
+			svgElement.addEventListener("mouseup", handleMouseUp)
+			svgElement.addEventListener("mouseleave", handleMouseLeave)
+			svgElement.addEventListener("wheel", wheel)
 		}
 
 		return () => {
-			if (zoomContainerRef.current) {
-				zoomContainerRef.current.removeEventListener("mousemove", mouseMove)
-				zoomContainerRef.current.removeEventListener(
+			if (svgElement) {
+				svgElement.removeEventListener("mousemove", mouseMove)
+				svgElement.removeEventListener(
 					"mousedown",
 					handleMouseDown
 				)
-				zoomContainerRef.current.removeEventListener("mouseup", handleMouseUp)
-				zoomContainerRef.current.removeEventListener(
+				svgElement.removeEventListener("mouseup", handleMouseUp)
+				svgElement.removeEventListener(
 					"mouseleave",
 					handleMouseLeave
 				)
-				zoomContainerRef.current.removeEventListener("wheel", wheel)
+				svgElement.removeEventListener("wheel", wheel)
 			}
 		}
 	}, [mouseMove, wheel, handleMouseDown, handleMouseUp, handleMouseLeave])

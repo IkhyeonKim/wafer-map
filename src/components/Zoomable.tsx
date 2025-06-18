@@ -1,4 +1,5 @@
 import { useThrottle } from "@/lib/useThrottle"
+import { atom, useSetAtom } from "jotai"
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 export type ZoomableProp = {
@@ -17,12 +18,15 @@ type Transform = {
 
 const INITIAL_SCALE = 600
 
+export const stableIsDraggedAtom = atom(false)
+
 export default function Zoomable({
 	children,
 	width,
 	height,
-	// viewBox,
-}: ZoomableProp) {
+}: // viewBox,
+ZoomableProp) {
+	const setStableIsDragged = useSetAtom(stableIsDraggedAtom)
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
 	const [isPanning, setIsPanning] = useState<boolean>(false)
 	const panStart = useRef<MouseCoordination>({
@@ -48,13 +52,17 @@ export default function Zoomable({
 			const dx = ev.clientX - panStart.current.clientX
 			const dy = ev.clientY - panStart.current.clientY
 
+			if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+				setStableIsDragged(true)
+			}
+
 			setTransform((prev) => ({
 				...prev,
 				translateX: transformStartRef.current.translateX + dx,
 				translateY: transformStartRef.current.translateY + dy,
 			}))
 		},
-		[isPanning]
+		[isPanning, setStableIsDragged]
 	)
 	const mouseMove = useThrottle((ev: MouseEvent) => handleMouseMove(ev), 5)
 
@@ -87,18 +95,23 @@ export default function Zoomable({
 	}, [])
 	const wheel = useThrottle((ev: WheelEvent) => handleWheel(ev), 10)
 
-	const handleMouseDown = useCallback((ev: MouseEvent) => {
-		setIsPanning(true)
-		panStart.current = {
-			clientX: ev.clientX,
-			clientY: ev.clientY,
-		}
-		transformStartRef.current = {
-			translateX: transform.translateX,
-			translateY: transform.translateY,
-			scale: transform.scale,
-		}
-	}, [transform])
+	const handleMouseDown = useCallback(
+		(ev: MouseEvent) => {
+			setIsPanning(true)
+			// NOTE: init isDragged flag
+			setStableIsDragged(false)
+			panStart.current = {
+				clientX: ev.clientX,
+				clientY: ev.clientY,
+			}
+			transformStartRef.current = {
+				translateX: transform.translateX,
+				translateY: transform.translateY,
+				scale: transform.scale,
+			}
+		},
+		[transform, setStableIsDragged]
+	)
 
 	const handleMouseUp = useCallback(() => {
 		setIsPanning(false)

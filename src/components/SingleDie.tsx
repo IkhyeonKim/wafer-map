@@ -50,9 +50,9 @@ export default function SingleDie(props: SingleDieProps) {
 		[dieInfo]
 	)
 
-	const [myDie, selectDie] = useAtom(dieAtom)
+	const [die, selectDie] = useAtom(dieAtom)
 
-	const { isSelected } = myDie
+	const { isSelected } = die
 
 	const leftTopX = positionX
 	const leftTopY = positionY
@@ -83,9 +83,10 @@ export default function SingleDie(props: SingleDieProps) {
 
 	useEffect(() => {
 		return () => {
-			// TODO: remove atom
+			// NOTE: remove atom
+			dieAtomFamily.remove(dieInfo)
 		}
-	}, [])
+	}, [dieInfo])
 
 	return (
 		<>

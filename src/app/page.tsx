@@ -1,18 +1,12 @@
-import WaferMap from "@/components/WaferMap"
-import DefectInfo from "@/components/DefectInfo"
 import { Suspense } from "react"
+import WaferPage from "@/components/WaferPage"
 
-export default function Home() {
+export default async function Home() {
 	return (
 		<main className="flex h-screen">
-			<div className="w-full">
-				<Suspense fallback={<div>This is wafer map skeleton</div>}>
-					<WaferMap />
-				</Suspense>
-			</div>
-			<div className="w-full">
-				<DefectInfo />
-			</div>
+			<Suspense fallback={<div>Fetch defect list...</div>}>
+				<WaferPage />
+			</Suspense>
 		</main>
 	)
 }

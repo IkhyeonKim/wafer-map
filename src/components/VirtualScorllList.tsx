@@ -1,4 +1,4 @@
-import useIntersectionObserver from "@/lib/useIntersectionOberver"
+import useIntersectionObserver from "@/lib/useIntersectionObserver"
 import { useThrottle } from "@/lib/useThrottle"
 import {
 	Children,
@@ -33,11 +33,6 @@ export default function VirtualScrollList({
 	renderItemCount = 20,
 	intersectionCallback,
 }: VirtualScrollProps) {
-	// TODO:
-	// 1. render children list
-	// 2. get item height
-	// 3. calculate scroll
-	// 4. render specific amount of children
 
 	const [scrollHeight, setScrollHeight] = useState<number>(0)
 

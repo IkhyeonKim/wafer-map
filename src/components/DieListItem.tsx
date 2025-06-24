@@ -25,9 +25,13 @@ export default function DieListItem({ dieInfo }: { dieInfo: Die }) {
 
 	const [die] = useAtom(dieAtom)
 	return (
-		<div className="flex">
-			<div>{die.id}</div>
-            <div>{die.isSelected ? "yes" : "no"}</div>
+		<div className="grid grid-cols-3 text-sm h-[30px]">
+			<div className="text-center">{die.x},{die.y}</div>
+            <div className="text-center">
+                {die.defectInfo ? die.defectInfo.defectType : "PASS"}
+            </div>
+			<div className="text-center">{die.defectInfo?.severity}</div>
+            {/* <div>{die.isSelected ? "yes" : "no"}</div> */}
 		</div>
 	)
 }

@@ -1,4 +1,4 @@
-import { Die } from "@/lib/Die"
+import { DefectInfo, defectTypeArray, Die, severityArray } from "@/lib/Die"
 
 function makeMockupData(): Die[] {
 	const data: Die[] = []
@@ -14,13 +14,28 @@ function makeMockupData(): Die[] {
 			const isDefect = getIsDefect(maxDefectCount, currentDefectCount)
 
 			if (isDefect) currentDefectCount += 1
-			const die = new Die(`die-${x},${y}`, x, y, isDefect)
+
+			const defectInfo: DefectInfo = getDefectInfo()
+			const die = new Die(`die-${x},${y}`, x, y, isDefect, defectInfo)
 
 			data.push(die)
 		}
 	}
 
 	return data
+}
+
+function getDefectInfo(): DefectInfo {
+	const randomType = Math.floor(Math.random() * defectTypeArray.length)
+	
+	const randomSeverity =
+		severityArray[Math.floor(Math.random() * severityArray.length)]
+
+	return {
+		defectType: defectTypeArray[randomType],
+		severity: randomSeverity,
+		description: "",
+	}
 }
 
 function getIsDefect(

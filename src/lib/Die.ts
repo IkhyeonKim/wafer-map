@@ -1,9 +1,14 @@
+export const defectTypeArray = ["A", "B", "C", "D", "E"] as const
+export const severityArray = ["Low", "Medium", "High"] as const
+
+type DefectType = (typeof defectTypeArray)[number] // "A" | "B" | "C" | "D" | "E"
+type Severity = (typeof severityArray)[number] // "Low" | "Medium" | "High"
+
 export type DefectInfo = {
-	defectType: string
-	severity: "Low" | "Medium" | "High"
+	defectType: DefectType
+	severity: Severity
 	description: string
 }
-
 
 /**
  * Represents a single die on a wafer.
@@ -23,8 +28,8 @@ export class Die {
 		x: number,
 		y: number,
 		isDefective: boolean = false,
-		defectSize?: number,
-		defectInfo?: DefectInfo
+		defectInfo?: DefectInfo,
+		defectSize?: number
 	) {
 		this.id = id
 		this.x = x

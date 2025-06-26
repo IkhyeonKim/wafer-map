@@ -25,7 +25,7 @@ export default function DieListItem({ dieInfo }: { dieInfo: Die }) {
 
 	const [die] = useAtom(dieAtom)
 	return (
-		<div className="grid grid-cols-3 text-sm h-[30px]">
+		<div className="grid grid-cols-3 text-sm h-[30px] p-1 border-b border-gray-200">
 			<div className="text-center">{die.x},{die.y}</div>
             <div className="text-center">
                 {die.defectInfo ? die.defectInfo.defectType : "PASS"}

@@ -13,6 +13,7 @@ type VirtualScrollProps = {
 	children: ReactNode
 	itemHeight?: number
 	renderItemCount?: number
+    classNames?: string
 	intersectionCallback?: () => void
 }
 
@@ -32,6 +33,7 @@ export default function VirtualScrollList({
 	itemHeight = 40,
 	renderItemCount = 20,
 	intersectionCallback,
+    classNames
 }: VirtualScrollProps) {
 
 	const [scrollHeight, setScrollHeight] = useState<number>(0)
@@ -49,7 +51,7 @@ export default function VirtualScrollList({
 		setScrollHeight(ev.currentTarget.scrollTop)
 	}, [])
 
-	const onScroll = useThrottle(handleScroll, 10)
+	const onScroll = useThrottle(handleScroll, 5)
 
 	const renderItems = useCallback(
 		(children: ReactNode) => {
@@ -79,7 +81,7 @@ export default function VirtualScrollList({
 						? `${itemHeight * totalChildrenCnt}px`
 						: "auto",
 				}}
-				className={`relative h-96 overflow-x-hidden overflow-y-scroll`}
+				className={`relative h-96 overflow-x-hidden overflow-y-scroll ${classNames}`}
 			>
 				{children && renderItems(children)}
 				<div

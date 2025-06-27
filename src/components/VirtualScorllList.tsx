@@ -5,6 +5,7 @@ import {
 	ReactNode,
 	UIEventHandler,
 	useCallback,
+	useLayoutEffect,
 	useRef,
 	useState,
 } from "react"
@@ -13,7 +14,8 @@ type VirtualScrollProps = {
 	children: ReactNode
 	itemHeight?: number
 	renderItemCount?: number
-    classNames?: string
+	scrollToHeight?: number
+	classNames?: string
 	intersectionCallback?: () => void
 }
 
@@ -33,10 +35,18 @@ export default function VirtualScrollList({
 	itemHeight = 40,
 	renderItemCount = 20,
 	intersectionCallback,
-    classNames
+	scrollToHeight,
+	classNames,
 }: VirtualScrollProps) {
+	const isControlled = scrollToHeight !== undefined
+	const [internalScrollHeight, setInternalScrollHeight] = useState<number>(
+		scrollToHeight || 0
+	)
 
-	const [scrollHeight, setScrollHeight] = useState<number>(0)
+	// If the component is controlled, use the prop. Otherwise, use our internal state.
+	const effectiveScrollHeight = isControlled
+		? scrollToHeight
+		: internalScrollHeight
 
 	const parentRef = useRef<HTMLDivElement>(null)
 	const targetRef = useRef<HTMLDivElement>(null)
@@ -45,17 +55,27 @@ export default function VirtualScrollList({
 
 	useIntersectionObserver({ triggerRef: targetRef, intersectionCallback })
 
+	useLayoutEffect(() => {
+		if (parentRef.current && parentRef.current.scrollTop !== scrollToHeight) {
+			parentRef.current.scrollTo({
+				top: scrollToHeight,
+				left: 0,
+				behavior: "smooth",
+			})
+		}
+	}, [scrollToHeight])
+
 	const handleScroll: UIEventHandler<HTMLDivElement> = useCallback((ev) => {
 		ev.stopPropagation()
 
-		setScrollHeight(ev.currentTarget.scrollTop)
+		setInternalScrollHeight(ev.currentTarget.scrollTop)
 	}, [])
 
 	const onScroll = useThrottle(handleScroll, 5)
 
 	const renderItems = useCallback(
 		(children: ReactNode) => {
-			const startIndex = getStartItemIdx(scrollHeight, itemHeight)
+			const startIndex = getStartItemIdx(internalScrollHeight, itemHeight)
 			const endIndex = startIndex + renderItemCount
 
 			return Children.toArray(children)
@@ -69,7 +89,7 @@ export default function VirtualScrollList({
 					)
 				})
 		},
-		[scrollHeight, itemHeight, renderItemCount]
+		[internalScrollHeight, itemHeight, renderItemCount]
 	)
 
 	return (

@@ -2,10 +2,11 @@ import useIntersectionObserver from "@/lib/useIntersectionObserver"
 import { useThrottle } from "@/lib/useThrottle"
 import {
 	Children,
+	forwardRef,
 	ReactNode,
 	UIEventHandler,
 	useCallback,
-	useLayoutEffect,
+	useImperativeHandle,
 	useRef,
 	useState,
 } from "react"
@@ -14,7 +15,6 @@ type VirtualScrollProps = {
 	children: ReactNode
 	itemHeight?: number
 	renderItemCount?: number
-	scrollToHeight?: number
 	classNames?: string
 	intersectionCallback?: () => void
 }
@@ -24,98 +24,113 @@ type VirtualScrollChildProp = {
 	top: number
 }
 
+export type VirtualScrollHandle = {
+	scrollTo: (position: number) => void
+}
+
 const getStartItemIdx = (scrollHeight: number, itemHeight: number) => {
 	if (scrollHeight < itemHeight) return 0
 
 	return Math.floor(scrollHeight / itemHeight)
 }
 
-export default function VirtualScrollList({
-	children,
-	itemHeight = 40,
-	renderItemCount = 20,
-	intersectionCallback,
-	scrollToHeight,
-	classNames,
-}: VirtualScrollProps) {
-	const isControlled = scrollToHeight !== undefined
-	const [internalScrollHeight, setInternalScrollHeight] = useState<number>(
-		scrollToHeight || 0
-	)
+export default forwardRef<VirtualScrollHandle, VirtualScrollProps>(
+	function VirtualScrollList(props, ref) {
+		const {
+			children,
+			itemHeight = 40,
+			renderItemCount = 20,
+			intersectionCallback,
+			classNames,
+		} = props
 
-	// If the component is controlled, use the prop. Otherwise, use our internal state.
-	const effectiveScrollHeight = isControlled
-		? scrollToHeight
-		: internalScrollHeight
+		const [internalScrollHeight, setInternalScrollHeight] = useState<number>(0)
 
-	const parentRef = useRef<HTMLDivElement>(null)
-	const targetRef = useRef<HTMLDivElement>(null)
+		const parentRef = useRef<HTMLDivElement>(null)
+		const targetRef = useRef<HTMLDivElement>(null)
 
-	const totalChildrenCnt = Children.count(children)
+		const totalChildrenCnt = Children.count(children)
 
-	useIntersectionObserver({ triggerRef: targetRef, intersectionCallback })
+		useIntersectionObserver({ triggerRef: targetRef, intersectionCallback })
 
-	useLayoutEffect(() => {
-		if (
-			parentRef.current &&
-			parentRef.current.scrollTop !== effectiveScrollHeight
-		) {
-			parentRef.current.scrollTo({
-				top: effectiveScrollHeight,
-				left: 0,
-				behavior: "smooth",
-			})
-		}
-	}, [effectiveScrollHeight])
+		useImperativeHandle(
+			ref,
+			() => {
+				return {
+					scrollTo(position) {
+						if (parentRef.current) {
+							parentRef.current.scrollTo({
+								top: position,
+								left: 0,
+								behavior: "smooth",
+							})
+						}
+					},
+				}
+			},
+			[]
+		)
 
-	const handleScroll: UIEventHandler<HTMLDivElement> = useCallback((ev) => {
-		ev.stopPropagation()
+		const handleScroll: UIEventHandler<HTMLDivElement> = useCallback((ev) => {
+			ev.stopPropagation()
 
-		setInternalScrollHeight(ev.currentTarget.scrollTop)
-	}, [])
+			setInternalScrollHeight(ev.currentTarget.scrollTop)
+		}, [])
 
-	const onScroll = useThrottle(handleScroll, 5)
+		const onScroll = useThrottle(handleScroll, 5)
 
-	const renderItems = useCallback(
-		(children: ReactNode) => {
-			const startIndex = getStartItemIdx(internalScrollHeight, itemHeight)
-			const endIndex = startIndex + renderItemCount
+		const renderItems = useCallback(
+			(children: ReactNode) => {
+				const startIndex = getStartItemIdx(internalScrollHeight, itemHeight)
+				const endIndex = startIndex + renderItemCount
 
-			return Children.toArray(children)
-				.slice(startIndex, endIndex)
-				.map((child, idx) => {
-					const current = startIndex + idx
-					return (
-						<VirtualScrollChild key={current} top={current * itemHeight}>
-							{child}
-						</VirtualScrollChild>
-					)
-				})
-		},
-		[internalScrollHeight, itemHeight, renderItemCount]
-	)
+				return Children.toArray(children)
+					.slice(startIndex, endIndex)
+					.map((child, idx) => {
+						const current = startIndex + idx
+						return (
+							<VirtualScrollChild key={current} top={current * itemHeight}>
+								{child}
+							</VirtualScrollChild>
+						)
+					})
+			},
+			[internalScrollHeight, itemHeight, renderItemCount]
+		)
 
-	return (
-		<div ref={parentRef} className={`h-full overflow-y-auto overflow-x-hidden ${classNames}`} onScroll={onScroll}>
+		return (
 			<div
-				style={{
-                    position: "relative",
-					height: totalChildrenCnt
-						? `${itemHeight * totalChildrenCnt}px`
-						: "auto",
-				}}
+				ref={parentRef}
+				className={`h-full overflow-y-auto overflow-x-hidden ${classNames}`}
+				onScroll={onScroll}
 			>
-				{children && renderItems(children)}
 				<div
-					key="scrollEnd"
-					id="virtual-scroll"
-					ref={targetRef}
-					className="absolute bottom-0 w-full"
-				/>
+					style={{
+						position: "relative",
+						height: totalChildrenCnt
+							? `${itemHeight * totalChildrenCnt}px`
+							: "auto",
+					}}
+				>
+					{children && renderItems(children)}
+					<div
+						key="scrollEnd"
+						id="virtual-scroll"
+						ref={targetRef}
+						className="absolute bottom-0 w-full"
+					/>
+				</div>
 			</div>
-		</div>
-	)
-}
+		)
+	}
+)
+
+// export default function VirtualScrollList(
+// 	props: VirtualScrollProps,
+// 	ref: Ref<VirtualScrollHandle>
+// ) {
+
+// }
 
 function VirtualScrollChild({ children, top }: VirtualScrollChildProp) {
 	return (

@@ -56,14 +56,17 @@ export default function VirtualScrollList({
 	useIntersectionObserver({ triggerRef: targetRef, intersectionCallback })
 
 	useLayoutEffect(() => {
-		if (parentRef.current && parentRef.current.scrollTop !== scrollToHeight) {
+		if (
+			parentRef.current &&
+			parentRef.current.scrollTop !== effectiveScrollHeight
+		) {
 			parentRef.current.scrollTo({
-				top: scrollToHeight,
+				top: effectiveScrollHeight,
 				left: 0,
 				behavior: "smooth",
 			})
 		}
-	}, [scrollToHeight])
+	}, [effectiveScrollHeight])
 
 	const handleScroll: UIEventHandler<HTMLDivElement> = useCallback((ev) => {
 		ev.stopPropagation()
@@ -93,15 +96,14 @@ export default function VirtualScrollList({
 	)
 
 	return (
-		<div className="h-full overflow-y-auto" onScroll={onScroll}>
+		<div ref={parentRef} className={`h-full overflow-y-auto overflow-x-hidden ${classNames}`} onScroll={onScroll}>
 			<div
-				ref={parentRef}
 				style={{
+                    position: "relative",
 					height: totalChildrenCnt
 						? `${itemHeight * totalChildrenCnt}px`
 						: "auto",
 				}}
-				className={`relative h-96 overflow-x-hidden overflow-y-scroll ${classNames}`}
 			>
 				{children && renderItems(children)}
 				<div

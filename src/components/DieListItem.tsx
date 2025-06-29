@@ -1,10 +1,11 @@
 import { Die } from "@/lib/Die"
-import { dieAtomFamily } from "@/lib/useDies"
+import { dieAtomFamily } from "@/lib/dieAtoms"
 import { useAtom } from "jotai"
 import { atom } from "jotai"
-import { useMemo } from "react"
+import { memo, useMemo } from "react"
 
-export default function DieListItem({ dieInfo }: { dieInfo: Die }) {
+export default memo(function DieListItem({ dieInfo }: { dieInfo: Die }) {
+	console.log("@@@@@@@")
 	const dieAtom = useMemo(
 		() =>
 			atom(
@@ -26,12 +27,14 @@ export default function DieListItem({ dieInfo }: { dieInfo: Die }) {
 	const [die] = useAtom(dieAtom)
 	return (
 		<div className="grid grid-cols-3 text-sm h-[30px] p-1 border-b border-gray-200">
-			<div className="text-center">{die.x},{die.y}</div>
-            <div className="text-center">
-                {die.defectInfo ? die.defectInfo.defectType : "PASS"}
-            </div>
+			<div className="text-center">
+				{die.x},{die.y}
+			</div>
+			<div className="text-center">
+				{die.defectInfo ? die.defectInfo.defectType : "PASS"}
+			</div>
 			<div className="text-center">{die.defectInfo?.severity}</div>
-            {/* <div>{die.isSelected ? "yes" : "no"}</div> */}
+			{/* <div>{die.isSelected ? "yes" : "no"}</div> */}
 		</div>
 	)
-}
+})

@@ -8,3 +8,5 @@ export const dieAtomFamily = atomFamily(
 )
 
 export const prevSelectedDieAtom = atom<Die | null>(null)
+
+export const currentSelectedDieAtom = atom<Die | null>(null)

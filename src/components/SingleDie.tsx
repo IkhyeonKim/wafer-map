@@ -1,7 +1,7 @@
 import { Die } from "@/lib/Die"
 import { useEffect, useMemo } from "react"
 import { atom, useAtom } from "jotai"
-import { dieAtomFamily, prevSelectedDieAtom } from "@/lib/useDies"
+import { dieAtomFamily, prevSelectedDieAtom } from "@/lib/dieAtoms"
 import { stableIsDraggedAtom } from "./Zoomable"
 
 export type DieRenderingInfo = {
@@ -55,7 +55,7 @@ export default function SingleDie(props: SingleDieProps) {
 							isSelected: false,
 						})
 					}
-					
+
 					set(prevSelectedDieAtom, newDieInfo)
 				}
 			),

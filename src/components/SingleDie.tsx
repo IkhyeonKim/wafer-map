@@ -18,6 +18,7 @@ export type DieRenderingInfo = {
 export type SingleDieProps = {
 	dieInfo: Die
 	renderingInfo: DieRenderingInfo
+	dieIndex: number
 }
 
 function calcHypotenuse(a: number, b: number) {
@@ -25,7 +26,14 @@ function calcHypotenuse(a: number, b: number) {
 }
 
 export default function SingleDie(props: SingleDieProps) {
-	const { renderingInfo, dieInfo } = props
+	const { renderingInfo, dieInfo, dieIndex } = props
+
+	const dieAtomInfo = useMemo(() => {
+		return {
+			...dieInfo,
+			dieIndex,
+		}
+	}, [dieIndex, dieInfo])
 
 	const { positionX, positionY, width, height, space, waferRadius, cx, cy } =
 		renderingInfo
@@ -36,16 +44,16 @@ export default function SingleDie(props: SingleDieProps) {
 		() =>
 			atom(
 				(get) => {
-					return get(dieAtomFamily(dieInfo))
+					return get(dieAtomFamily(dieAtomInfo))
 				},
 				(get, set) => {
 					const isDragged = get(stableIsDraggedAtom)
 					if (isDragged) return
 
-					const prev = get(dieAtomFamily(dieInfo))
+					const prev = get(dieAtomFamily(dieAtomInfo))
 					const newDieInfo = { ...prev, isSelected: !prev.isSelected }
 
-					set(dieAtomFamily(dieInfo), newDieInfo)
+					set(dieAtomFamily(dieAtomInfo), newDieInfo)
 
 					const previouslySelect = get(prevSelectedDieAtom)
 					if (previouslySelect) {
@@ -60,7 +68,7 @@ export default function SingleDie(props: SingleDieProps) {
 				}
 			),
 
-		[dieInfo]
+		[dieAtomInfo]
 	)
 
 	const [die, selectDie] = useAtom(dieAtom)
@@ -97,9 +105,9 @@ export default function SingleDie(props: SingleDieProps) {
 	useEffect(() => {
 		return () => {
 			// NOTE: remove atom
-			dieAtomFamily.remove(dieInfo)
+			dieAtomFamily.remove(dieAtomInfo)
 		}
-	}, [dieInfo])
+	}, [dieAtomInfo])
 
 	return (
 		<>

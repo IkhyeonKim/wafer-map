@@ -33,7 +33,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				r={WAFER_RADIUS}
 				fill="#ffffff"
 			/>
-			{dieInfo.map((die) => {
+			{dieInfo.map((die, index) => {
 				const positionX =
 					die.x === 0 ? 0 : die.x * singleDieWidth + die.x * GAP_WIDTH
 				const positionY =
@@ -55,6 +55,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 						key={die.id}
 						renderingInfo={renderingInfo}
 						dieInfo={{ ...die }}
+						dieIndex={index}
 					/>
 				)
 			})}

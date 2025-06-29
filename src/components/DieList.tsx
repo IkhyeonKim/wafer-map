@@ -1,16 +1,23 @@
 import { Die } from "@/lib/Die"
 import DieListItem from "./DieListItem"
 import VirtualScrollList, { VirtualScrollHandle } from "./VirtualScorllList"
-import { useRef } from "react"
-import { useAtom } from "jotai"
+import { useEffect, useRef } from "react"
+import { useAtomValue } from "jotai"
 import { prevSelectedDieAtom } from "@/lib/dieAtoms"
+
+const ITEM_HEIGHT = 30
 
 export default function DieList({ dieList }: { dieList: Die[] }) {
 	const virtualScrollRef = useRef<VirtualScrollHandle>(null)
 
-	const selectedDie = useAtom(prevSelectedDieAtom)
+	const selectedDie = useAtomValue(prevSelectedDieAtom)
 
-	console.log("selectedDie", selectedDie)
+	useEffect(() => {
+		if (selectedDie) {
+			const { dieIndex } = selectedDie
+			virtualScrollRef.current?.scrollTo(dieIndex * ITEM_HEIGHT)
+		}
+	}, [selectedDie])
 
 	return (
 		<div className="p-4 h-full">
@@ -31,8 +38,8 @@ export default function DieList({ dieList }: { dieList: Die[] }) {
 				renderItemCount={30}
 				ref={virtualScrollRef}
 			>
-				{dieList.map((die) => {
-					return <DieListItem key={die.id} dieInfo={die} />
+				{dieList.map((die, index) => {
+					return <DieListItem key={die.id} dieInfo={die} dieIndex={index} />
 				})}
 			</VirtualScrollList>
 			{/* {dieList && renderList()} */}

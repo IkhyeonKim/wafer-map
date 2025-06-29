@@ -4,13 +4,25 @@ import { useAtom } from "jotai"
 import { atom } from "jotai"
 import { memo, useMemo } from "react"
 
-export default memo(function DieListItem({ dieInfo }: { dieInfo: Die }) {
-	console.log("@@@@@@@")
+export default memo(function DieListItem({
+	dieInfo,
+	dieIndex,
+}: {
+	dieInfo: Die
+	dieIndex: number
+}) {
+	const dieAtomInfo = useMemo(() => {
+		return {
+			...dieInfo,
+			dieIndex,
+		}
+	}, [dieIndex, dieInfo])
+
 	const dieAtom = useMemo(
 		() =>
 			atom(
 				(get) => {
-					return get(dieAtomFamily(dieInfo))
+					return get(dieAtomFamily(dieAtomInfo))
 				}
 				// (get, set) => {
 				// 	const isDragged = get(stableIsDraggedAtom)
@@ -21,7 +33,7 @@ export default memo(function DieListItem({ dieInfo }: { dieInfo: Die }) {
 				// }
 			),
 
-		[dieInfo]
+		[dieAtomInfo]
 	)
 
 	const [die] = useAtom(dieAtom)

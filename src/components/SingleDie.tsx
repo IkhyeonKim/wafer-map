@@ -1,7 +1,7 @@
 import { Die } from "@/lib/Die"
 import { useEffect, useMemo } from "react"
 import { atom, useAtom } from "jotai"
-import { dieAtomFamily, prevSelectedDieAtom } from "@/lib/dieAtoms"
+import { DieAtom, dieAtomFamily, prevSelectedDieAtom } from "@/lib/dieAtoms"
 import { stableIsDraggedAtom } from "./Zoomable"
 
 export type DieRenderingInfo = {
@@ -28,10 +28,11 @@ function calcHypotenuse(a: number, b: number) {
 export default function SingleDie(props: SingleDieProps) {
 	const { renderingInfo, dieInfo, dieIndex } = props
 
-	const dieAtomInfo = useMemo(() => {
+	const dieAtomInfo: DieAtom = useMemo(() => {
 		return {
 			...dieInfo,
 			dieIndex,
+			shouldMoveScroll: true,
 		}
 	}, [dieIndex, dieInfo])
 
@@ -51,7 +52,11 @@ export default function SingleDie(props: SingleDieProps) {
 					if (isDragged) return
 
 					const prev = get(dieAtomFamily(dieAtomInfo))
-					const newDieInfo = { ...prev, isSelected: !prev.isSelected }
+					const newDieInfo = {
+						...prev,
+						isSelected: !prev.isSelected,
+						shouldMoveScroll: true,
+					}
 
 					set(dieAtomFamily(dieAtomInfo), newDieInfo)
 

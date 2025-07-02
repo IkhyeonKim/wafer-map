@@ -13,7 +13,7 @@ export default function DieList({ dieList }: { dieList: Die[] }) {
 	const selectedDie = useAtomValue(prevSelectedDieAtom)
 
 	useEffect(() => {
-		if (selectedDie) {
+		if (selectedDie && selectedDie.shouldMoveScroll) {
 			const { dieIndex } = selectedDie
 			virtualScrollRef.current?.scrollTo(dieIndex * ITEM_HEIGHT)
 		}

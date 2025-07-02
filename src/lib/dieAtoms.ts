@@ -4,6 +4,7 @@ import { atom } from "jotai"
 
 export type DieAtom = Die & {
 	dieIndex: number
+	shouldMoveScroll: boolean
 }
 
 export const dieAtomFamily = atomFamily(

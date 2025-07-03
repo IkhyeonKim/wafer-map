@@ -1,60 +1,16 @@
 import { Die } from "@/lib/Die"
-import { DieAtom, dieAtomFamily, prevSelectedDieAtom } from "@/lib/dieAtoms"
-import { useAtom } from "jotai"
-import { atom } from "jotai"
-import { memo, useCallback, useMemo } from "react"
+import { selectDieAtom } from "@/lib/dieAtoms"
+import { useSetAtom } from "jotai"
+import { memo, useCallback } from "react"
 
-export default memo(function DieListItem({
-	dieInfo,
-	dieIndex,
-}: {
-	dieInfo: Die
-	dieIndex: number
-}) {
-	const dieAtomInfo: DieAtom = useMemo(() => {
-		return {
-			...dieInfo,
-			dieIndex,
-			shouldMoveScroll: false,
-		}
-	}, [dieIndex, dieInfo])
+export default memo(function DieListItem({ dieInfo }: { dieInfo: Die }) {
+	const { x, y, defectInfo } = dieInfo
 
-	const dieAtom = useMemo(
-		() =>
-			atom(
-				(get) => {
-					return get(dieAtomFamily(dieAtomInfo))
-				},
-				(get, set) => {
-					const prev = get(dieAtomFamily(dieAtomInfo))
-					const newDieInfo = {
-						...prev,
-						isSelected: !prev.isSelected,
-						shouldMoveScroll: false,
-					}
-
-					set(dieAtomFamily(dieAtomInfo), newDieInfo)
-
-					const previouslySelect = get(prevSelectedDieAtom)
-					if (previouslySelect) {
-						const prevDieAtom = get(dieAtomFamily(previouslySelect))
-						set(dieAtomFamily(prevDieAtom), {
-							...prevDieAtom,
-							isSelected: false,
-						})
-					}
-
-					set(prevSelectedDieAtom, newDieInfo)
-				}
-			),
-
-		[dieAtomInfo]
-	)
-	const [die, selectDie] = useAtom(dieAtom)
+	const selectThisDie = useSetAtom(selectDieAtom)
 
 	const onClick = useCallback(() => {
-		selectDie()
-	}, [selectDie])
+		selectThisDie(dieInfo)
+	}, [selectThisDie, dieInfo])
 
 	return (
 		<div
@@ -62,12 +18,12 @@ export default memo(function DieListItem({
 			onClick={onClick}
 		>
 			<div className="text-center">
-				{die.x},{die.y}
+				{x},{y}
 			</div>
 			<div className="text-center">
-				{die.defectInfo ? die.defectInfo.defectType : "PASS"}
+				{defectInfo ? defectInfo.defectType : "PASS"}
 			</div>
-			<div className="text-center">{die.defectInfo?.severity}</div>
+			<div className="text-center">{defectInfo?.severity}</div>
 			{/* <div>{die.isSelected ? "yes" : "no"}</div> */}
 		</div>
 	)

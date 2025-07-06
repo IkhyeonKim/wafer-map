@@ -21,18 +21,11 @@ export default function DieList({ dieList }: { dieList: Die[] }) {
 	}, [dieList, selectedDie])
 
 	return (
-		<div className="p-4 h-full">
-			<button
-				onClick={() => {
-					virtualScrollRef.current?.scrollTo(500)
-				}}
-			>
-				Scroll
-			</button>
-			<div className="grid grid-cols-3">
-				<div className="text-center">Position</div>
-				<div className="text-center">Defect type</div>
-				<div className="text-center">Severity</div>
+		<div className="h-full border-l border-r border-slate-50">
+			<div className="grid grid-cols-3 border-b border-slate-200 p-2 bg-slate-800">
+				<div className="text-center text-slate-50 font-bold">Position</div>
+				<div className="text-center text-slate-50 font-bold">Defect type</div>
+				<div className="text-center text-slate-50 font-bold">Severity</div>
 			</div>
 			<VirtualScrollList
 				itemHeight={30}

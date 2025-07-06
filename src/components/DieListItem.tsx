@@ -14,7 +14,7 @@ export default memo(function DieListItem({ dieInfo }: { dieInfo: Die }) {
 
 	return (
 		<div
-			className="grid grid-cols-3 text-sm h-[30px] p-1 border-b border-gray-200 cursor-pointer"
+			className="grid grid-cols-3 text-sm h-[30px] p-1 border-b border-slate-500 bg-slate-700 cursor-pointer text-slate-100"
 			onClick={onClick}
 		>
 			<div className="text-center">

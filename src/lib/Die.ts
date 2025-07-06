@@ -1,8 +1,14 @@
-export const defectTypeArray = ["A", "B", "C", "D", "E"] as const
+export const defectTypeArray = [
+	"Scratch",
+	"Micro-crack",
+	"Particle",
+	"Residue",
+	"Discoloration",
+] as const
 export const severityArray = ["Low", "Medium", "High"] as const
 
-type DefectType = (typeof defectTypeArray)[number] // "A" | "B" | "C" | "D" | "E"
-type Severity = (typeof severityArray)[number] // "Low" | "Medium" | "High"
+type DefectType = (typeof defectTypeArray)[number]
+type Severity = (typeof severityArray)[number]
 
 export type DefectInfo = {
 	defectType: DefectType

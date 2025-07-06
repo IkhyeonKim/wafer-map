@@ -31,7 +31,7 @@ function calcHypotenuse(a: number, b: number) {
 export default memo(function SingleDie(props: SingleDieProps) {
 	const { dieInfo, isSelected, itemWidth, itemHeight, gap, waferRadius } = props
 
-	const { id, x, y } = dieInfo
+	const { id, x, y, isDefective } = dieInfo
 
 	const { positionX, positionY } = useMemo(
 		() => ({
@@ -67,7 +67,7 @@ export default memo(function SingleDie(props: SingleDieProps) {
 					y={positionY}
 					width={itemWidth}
 					height={itemHeight}
-					fill={isSelected ? "#341ade" : "#c0c0c0"}
+					fill={isSelected ? "#341ade" : isDefective ? "#ff6262" : "#7b818a"}
 					onClick={() => selectThisDie(dieInfo)}
 				/>
 			}

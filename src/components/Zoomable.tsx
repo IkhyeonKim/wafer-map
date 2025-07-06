@@ -157,8 +157,8 @@ ZoomableProp) {
 			viewBox={`0 0 ${INITIAL_SCALE} ${INITIAL_SCALE}`}
 			className={
 				isPanning
-					? "cursor-grabbing rounded-xl bg-slate-100"
-					: "cursor-grab rounded-xl bg-slate-100"
+					? "cursor-grabbing rounded-xl border border-slate-50"
+					: "cursor-grab rounded-xl border border-slate-50"
 			}
 		>
 			<g

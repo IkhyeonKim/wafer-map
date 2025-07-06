@@ -16,7 +16,7 @@ function makeMockupData(): Die[] {
 	const mapSize = getMapSize()
 	const totalCells = mapSize * mapSize
 
-	const desiredDefectCount = Math.floor(totalCells * 0.05)
+	const desiredDefectCount = Math.floor(totalCells * 0.2)
 
 	const allCoords: { x: number; y: number }[] = []
 	for (let x = 0; x < mapSize; x++) {
@@ -62,8 +62,8 @@ function getDefectInfo(): DefectInfo {
 }
 
 function getMapSize(): number {
-	const minMapSize = 10
-	const maxMapSize = 50
+	const minMapSize = 20
+	const maxMapSize = 70
 	let mapSize = 0
 
 	while (mapSize < minMapSize) {

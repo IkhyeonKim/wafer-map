@@ -33,7 +33,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				cx={WAFER_RADIUS}
 				cy={WAFER_RADIUS}
 				r={WAFER_RADIUS}
-				fill="#ffffff"
+				fill="#e3e3e3"
 			/>
 			{dieInfo.map((die, index) => {
 				return (

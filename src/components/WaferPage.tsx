@@ -9,17 +9,17 @@ export default async function WaferPage() {
 	const dieList: Die[] = await data.json()
 
 	return (
-		<>
-			<div className="w-full">
+		<section className="w-full h-full flex">
+			<div className="w-full bg-slate-800">
 				<Suspense fallback={<div>This is wafer map skeleton</div>}>
 					<WaferMap dieList={dieList} />
 				</Suspense>
 			</div>
-			<div className="w-full">
+			<div className="w-full bg-slate-800">
 				<Suspense fallback={<div>This is defect list skeleton</div>}>
 					<DefectInfo dieList={dieList} />
 				</Suspense>
 			</div>
-		</>
+		</section>
 	)
 }

@@ -2,6 +2,7 @@ import { Die } from "@/lib/Die"
 import { memo, useMemo } from "react"
 import { useSetAtom } from "jotai"
 import { selectDieAtom } from "@/lib/dieAtoms"
+import { useDieSeverity } from "@/lib/useDieSeverity"
 
 export type DieRenderingInfo = {
 	width: number
@@ -44,17 +45,21 @@ export default memo(function SingleDie(props: SingleDieProps) {
 	const selectThisDie = useSetAtom(selectDieAtom)
 
 	const isAllCornerIn = useMemo(() => {
-        const corners = [
-            { x: positionX, y: positionY },
-            { x: positionX + itemWidth, y: positionY },
-            { x: positionX, y: positionY + itemHeight },
-            { x: positionX + itemWidth, y: positionY + itemHeight },
-        ];
+		const corners = [
+			{ x: positionX, y: positionY },
+			{ x: positionX + itemWidth, y: positionY },
+			{ x: positionX, y: positionY + itemHeight },
+			{ x: positionX + itemWidth, y: positionY + itemHeight },
+		]
 
-        return corners.every(corner => 
-            calcHypotenuse(corner.x - waferRadius, corner.y - waferRadius) <= waferRadius - gap
-        );
-    }, [positionX, positionY, itemWidth, itemHeight, waferRadius, gap]);
+		return corners.every(
+			(corner) =>
+				calcHypotenuse(corner.x - waferRadius, corner.y - waferRadius) <=
+				waferRadius - gap
+		)
+	}, [positionX, positionY, itemWidth, itemHeight, waferRadius, gap])
+
+	const severityColor = useDieSeverity(dieInfo)
 
 	if (!isAllCornerIn) return <></>
 
@@ -67,7 +72,9 @@ export default memo(function SingleDie(props: SingleDieProps) {
 					y={positionY}
 					width={itemWidth}
 					height={itemHeight}
-					fill={isSelected ? "#341ade" : isDefective ? "#ff6262" : "#7b818a"}
+					fill={
+						isSelected ? "#341ade" : isDefective ? severityColor : "#7b818a"
+					}
 					onClick={() => selectThisDie(dieInfo)}
 				/>
 			}

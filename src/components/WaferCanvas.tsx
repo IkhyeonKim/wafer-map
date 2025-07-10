@@ -5,6 +5,7 @@ import SingleDie from "./SingleDie"
 import Zoomable from "./Zoomable"
 import { useAtomValue } from "jotai"
 import { selectedDieAtom } from "@/lib/dieAtoms"
+import { Button } from "./ui/button"
 
 export type WaferCanvasProps = {
 	dieInfo: Die[]
@@ -28,27 +29,32 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 	// console.log({ lastDie, singleDieWidth })
 
 	return (
-		<Zoomable width={600} height={600} viewBox="0 0 600 600">
-			<circle
-				cx={WAFER_RADIUS}
-				cy={WAFER_RADIUS}
-				r={WAFER_RADIUS}
-				fill="#e3e3e3"
-			/>
-			{dieInfo.map((die, index) => {
-				return (
-					<SingleDie
-						key={die.id}
-						itemWidth={singleDieWidth}
-						itemHeight={singleDieWidth}
-						gap={GAP_WIDTH}
-						waferRadius={WAFER_RADIUS}
-						dieInfo={die}
-						dieIndex={index}
-						isSelected={die.id === selectedDie?.id}
-					/>
-				)
-			})}
-		</Zoomable>
+		<div className="relative">
+			<Zoomable width={600} height={600} viewBox="0 0 600 600">
+				<circle
+					cx={WAFER_RADIUS}
+					cy={WAFER_RADIUS}
+					r={WAFER_RADIUS}
+					fill="#e3e3e3"
+				/>
+				{dieInfo.map((die, index) => {
+					return (
+						<SingleDie
+							key={die.id}
+							itemWidth={singleDieWidth}
+							itemHeight={singleDieWidth}
+							gap={GAP_WIDTH}
+							waferRadius={WAFER_RADIUS}
+							dieInfo={die}
+							dieIndex={index}
+							isSelected={die.id === selectedDie?.id}
+						/>
+					)
+				})}
+			</Zoomable>
+			<div className="absolute bottom-2 right-2">
+				<Button>Reset</Button>
+			</div>
+		</div>
 	)
 }

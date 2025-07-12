@@ -2,10 +2,11 @@
 
 import { Die } from "@/lib/Die"
 import SingleDie from "./SingleDie"
-import Zoomable from "./Zoomable"
+import Zoomable, { ZoomableHandle } from "./Zoomable"
 import { useAtomValue } from "jotai"
 import { selectedDieAtom } from "@/lib/dieAtoms"
 import { Button } from "./ui/button"
+import { useRef } from "react"
 
 export type WaferCanvasProps = {
 	dieInfo: Die[]
@@ -17,6 +18,7 @@ const GAP_WIDTH = 1
 
 export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 	const selectedDie = useAtomValue(selectedDieAtom)
+	const zoomableRef = useRef<ZoomableHandle>(null)
 
 	if (!dieInfo) return <svg />
 
@@ -26,11 +28,23 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 
 	const singleDieWidth = (CANVAS_SIZE - mapSize * GAP_WIDTH) / mapSize
 
+	const onResetZoom = () => {
+		zoomableRef.current?.setScale({
+			translateX: 0,
+			translateY: 0,
+			scale: 1,
+		})
+	}
 	// console.log({ lastDie, singleDieWidth })
 
 	return (
 		<div className="relative">
-			<Zoomable width={600} height={600} viewBox="0 0 600 600">
+			<Zoomable
+				width={600}
+				height={600}
+				viewBox="0 0 600 600"
+				ref={zoomableRef}
+			>
 				<circle
 					cx={WAFER_RADIUS}
 					cy={WAFER_RADIUS}
@@ -53,7 +67,7 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				})}
 			</Zoomable>
 			<div className="absolute bottom-2 right-2">
-				<Button>Reset</Button>
+				<Button className="cursor-pointer" onClick={onResetZoom}>Reset</Button>
 			</div>
 		</div>
 	)

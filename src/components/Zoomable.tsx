@@ -1,6 +1,14 @@
 import { useThrottle } from "@/lib/useThrottle"
 import { atom, useSetAtom } from "jotai"
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react"
+import {
+	forwardRef,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+	useState,
+} from "react"
 
 export type ZoomableProp = {
 	children: ReactNode
@@ -9,8 +17,12 @@ export type ZoomableProp = {
 	viewBox?: string
 }
 
+export type ZoomableHandle = {
+	setScale: (transformMatrix: TransformMatrix) => void
+}
+
 type MouseCoordination = Pick<MouseEvent, "clientX" | "clientY">
-type Transform = {
+export type TransformMatrix = {
 	translateX: number
 	translateY: number
 	scale: number
@@ -20,12 +32,10 @@ const INITIAL_SCALE = 600
 
 export const stableIsDraggedAtom = atom(false)
 
-export default function Zoomable({
-	children,
-	width,
-	height,
-}: // viewBox,
-ZoomableProp) {
+export default forwardRef<ZoomableHandle, ZoomableProp>(function Zoomable(
+	{ children, width, height }, // viewBox,
+	ref
+) {
 	const setStableIsDragged = useSetAtom(stableIsDraggedAtom)
 	const zoomContainerRef = useRef<SVGSVGElement | null>(null)
 	const [isPanning, setIsPanning] = useState<boolean>(false)
@@ -34,12 +44,12 @@ ZoomableProp) {
 		clientY: 0,
 	})
 
-	const [transform, setTransform] = useState<Transform>({
+	const [transform, setTransform] = useState<TransformMatrix>({
 		translateX: 0,
 		translateY: 0,
 		scale: 1,
 	})
-	const transformStartRef = useRef<Transform>({
+	const transformStartRef = useRef<TransformMatrix>({
 		translateX: 0,
 		translateY: 0,
 		scale: 1,
@@ -135,19 +145,21 @@ ZoomableProp) {
 		return () => {
 			if (svgElement) {
 				svgElement.removeEventListener("mousemove", mouseMove)
-				svgElement.removeEventListener(
-					"mousedown",
-					handleMouseDown
-				)
+				svgElement.removeEventListener("mousedown", handleMouseDown)
 				svgElement.removeEventListener("mouseup", handleMouseUp)
-				svgElement.removeEventListener(
-					"mouseleave",
-					handleMouseLeave
-				)
+				svgElement.removeEventListener("mouseleave", handleMouseLeave)
 				svgElement.removeEventListener("wheel", wheel)
 			}
 		}
 	}, [mouseMove, wheel, handleMouseDown, handleMouseUp, handleMouseLeave])
+
+	useImperativeHandle(ref, () => {
+		return {
+			setScale(transform) {
+				setTransform({ ...transform })
+			},
+		}
+	})
 
 	return (
 		<svg
@@ -169,4 +181,4 @@ ZoomableProp) {
 			{/* <rect width={width} height={height} className={"fill-transparent"} /> */}
 		</svg>
 	)
-}
+})

@@ -60,23 +60,42 @@ export default memo(function SingleDie(props: SingleDieProps) {
 	}, [positionX, positionY, itemWidth, itemHeight, waferRadius, gap])
 
 	const severityColor = useDieSeverity(dieInfo)
+	const shouldPing = dieInfo.defectInfo?.severity === "High"
 
 	if (!isAllCornerIn) return <></>
 
 	return (
 		<>
 			{
-				<rect
-					id={id}
-					x={positionX}
-					y={positionY}
-					width={itemWidth}
-					height={itemHeight}
-					fill={
-						isSelected ? "#341ade" : isDefective ? severityColor : "#7b818a"
-					}
-					onClick={() => selectThisDie(dieInfo)}
-				/>
+				<g>
+					{shouldPing && (
+						<rect
+							className={"ping-rect"}
+							id={id}
+							x={positionX}
+							y={positionY}
+							width={itemWidth}
+							height={itemHeight}
+							fill={
+								isSelected ? "#341ade" : isDefective ? severityColor : "#7b818a"
+							}
+							onClick={() => selectThisDie(dieInfo)}
+						/>
+					)}
+
+					<rect
+						// className="animate-ping"
+						id={id}
+						x={positionX}
+						y={positionY}
+						width={itemWidth}
+						height={itemHeight}
+						fill={
+							isSelected ? "#341ade" : isDefective ? severityColor : "#7b818a"
+						}
+						onClick={() => selectThisDie(dieInfo)}
+					/>
+				</g>
 			}
 		</>
 	)

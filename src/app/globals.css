@@ -122,3 +122,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes custom-ping {
+  50%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.ping-rect {
+  animation: custom-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  transform-origin: center;
+  transform-box: fill-box;
+}

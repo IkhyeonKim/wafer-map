@@ -1,4 +1,10 @@
 import { DefectInfo, defectTypeArray, Die, severityArray } from "@/lib/Die"
+import { isDieInWafer } from "@/lib/waferUtils"
+
+export type DieDataResponse = {
+	dieList: Die[],
+	mapSize: number
+}
 
 function shuffleArray<T>(array: T[]): T[] {
 	const newArray = [...array]
@@ -10,42 +16,70 @@ function shuffleArray<T>(array: T[]): T[] {
 	return newArray
 }
 
-function makeMockupData(): Die[] {
-	const data: Die[] = []
+function makeMockupData(
+	canvasSize: number,
+	waferRadius: number,
+	gapWidth: number
+): DieDataResponse {
+
+	// const data = []
 
 	const mapSize = getMapSize()
-	const totalCells = mapSize * mapSize
+	const singleDieWidth = (canvasSize - mapSize * gapWidth) / mapSize
+	// const totalCells = mapSize * mapSize
+	// const desiredDefectCount = Math.floor(totalCells * 0.05)
 
-	const desiredDefectCount = Math.floor(totalCells * 0.1)
-
-	const allCoords: { x: number; y: number }[] = []
+	const validCoords: { x: number; y: number }[] = []
 	for (let x = 0; x < mapSize; x++) {
 		for (let y = 0; y < mapSize; y++) {
-			allCoords.push({ x, y })
+			if (
+				isDieInWafer(
+					x,
+					y,
+					singleDieWidth,
+					singleDieWidth,
+					gapWidth,
+					waferRadius
+				)
+			) {
+				validCoords.push({ x, y })
+			}
 		}
 	}
-	const shuffledCoords = shuffleArray(allCoords)
+	const totalValidDies = validCoords.length;
+    const desiredDefectCount = Math.floor(totalValidDies * 0.05); // 5% defect rate
+    const shuffledValidCoords = shuffleArray(validCoords);
+    
+    const defectLocations = new Set<string>();
+    shuffledValidCoords.slice(0, desiredDefectCount).forEach(coord => {
+        defectLocations.add(`${coord.x},${coord.y}`);
+    });
 
-	const defectLocations = new Set<string>()
-	shuffledCoords.slice(0, desiredDefectCount).forEach((coord) => {
-		// Store as a "x,y" string for easy lookup
-		defectLocations.add(`${coord.x},${coord.y}`)
-	})
+	// for (let x = 0; x < mapSize; x++) {
+	// 	for (let y = 0; y < mapSize; y++) {
+	// 		const coordKey = `${x},${y}`
+	// 		const isDefect = defectLocations.has(coordKey)
 
-	for (let x = 0; x < mapSize; x++) {
-		for (let y = 0; y < mapSize; y++) {
-			const coordKey = `${x},${y}`
-			const isDefect = defectLocations.has(coordKey)
+	// 		// Only generate detailed defect info if it's actually a defect
+	// 		const defectInfo = isDefect ? getDefectInfo() : undefined
 
-			// Only generate detailed defect info if it's actually a defect
-			const defectInfo = isDefect ? getDefectInfo() : undefined
+	// 		const die = new Die(`die-${x},${y}`, x, y, isDefect, defectInfo)
+	// 		data.push(die)
+	// 	}
+	// }
 
-			const die = new Die(`die-${x},${y}`, x, y, isDefect, defectInfo)
-			data.push(die)
-		}
+	const data: Die[] = validCoords.map(({ x, y }) => {
+        const coordKey = `${x},${y}`;
+        const isDefect = defectLocations.has(coordKey);
+        const defectInfo = isDefect ? getDefectInfo() : undefined;
+
+        return new Die(`die-${x},${y}`, x, y, isDefect, defectInfo);
+    });
+
+	return {
+		dieList: data,
+		mapSize
 	}
-
-	return data
 }
 
 function getDefectInfo(): DefectInfo {
@@ -74,7 +108,7 @@ function getMapSize(): number {
 }
 
 export async function GET() {
-	const data: Die[] = makeMockupData()
+	const data: DieDataResponse = makeMockupData(600, 300, 1)
 
 	return new Response(JSON.stringify(data), {
 		status: 200,

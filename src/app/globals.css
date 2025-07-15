@@ -131,7 +131,7 @@
 }
 
 .ping-rect {
-  animation: custom-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  animation: custom-ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
 
   transform-origin: center;
   transform-box: fill-box;

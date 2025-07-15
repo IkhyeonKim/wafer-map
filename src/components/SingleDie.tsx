@@ -25,12 +25,8 @@ export type SingleDieProps = {
 	gap: number
 }
 
-function calcHypotenuse(a: number, b: number) {
-	return Math.sqrt(a * a + b * b)
-}
-
 export default memo(function SingleDie(props: SingleDieProps) {
-	const { dieInfo, isSelected, itemWidth, itemHeight, gap, waferRadius } = props
+	const { dieInfo, isSelected, itemWidth, itemHeight, gap } = props
 
 	const { id, x, y, isDefective } = dieInfo
 
@@ -44,25 +40,8 @@ export default memo(function SingleDie(props: SingleDieProps) {
 
 	const selectThisDie = useSetAtom(selectDieAtom)
 
-	const isAllCornerIn = useMemo(() => {
-		const corners = [
-			{ x: positionX, y: positionY },
-			{ x: positionX + itemWidth, y: positionY },
-			{ x: positionX, y: positionY + itemHeight },
-			{ x: positionX + itemWidth, y: positionY + itemHeight },
-		]
-
-		return corners.every(
-			(corner) =>
-				calcHypotenuse(corner.x - waferRadius, corner.y - waferRadius) <=
-				waferRadius - gap
-		)
-	}, [positionX, positionY, itemWidth, itemHeight, waferRadius, gap])
-
 	const severityColor = useDieSeverity(dieInfo)
 	const shouldPing = dieInfo.defectInfo?.severity === "High"
-
-	if (!isAllCornerIn) return <></>
 
 	return (
 		<>
@@ -84,7 +63,6 @@ export default memo(function SingleDie(props: SingleDieProps) {
 					)}
 
 					<rect
-						// className="animate-ping"
 						id={id}
 						x={positionX}
 						y={positionY}

@@ -10,21 +10,18 @@ import { useRef } from "react"
 
 export type WaferCanvasProps = {
 	dieInfo: Die[]
+	mapSize: number
 }
 
 const CANVAS_SIZE = 600
 const WAFER_RADIUS = 300
 const GAP_WIDTH = 1
 
-export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
+export default function WaferCanvas({ dieInfo, mapSize }: WaferCanvasProps) {
 	const selectedDie = useAtomValue(selectedDieAtom)
 	const zoomableRef = useRef<ZoomableHandle>(null)
 
 	if (!dieInfo) return <svg />
-
-	const totalDie = dieInfo.length
-	const lastDie = dieInfo[totalDie - 1]
-	const { x: mapSize } = lastDie
 
 	const singleDieWidth = (CANVAS_SIZE - mapSize * GAP_WIDTH) / mapSize
 
@@ -35,7 +32,6 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 			scale: 1,
 		})
 	}
-	// console.log({ lastDie, singleDieWidth })
 
 	return (
 		<div className="relative">
@@ -67,7 +63,9 @@ export default function WaferCanvas({ dieInfo }: WaferCanvasProps) {
 				})}
 			</Zoomable>
 			<div className="absolute bottom-2 right-2">
-				<Button className="cursor-pointer" onClick={onResetZoom}>Reset</Button>
+				<Button className="cursor-pointer" onClick={onResetZoom}>
+					Reset
+				</Button>
 			</div>
 		</div>
 	)

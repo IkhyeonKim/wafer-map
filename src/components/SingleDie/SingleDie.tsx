@@ -18,7 +18,6 @@ export type DieRenderingInfo = {
 export type SingleDieProps = {
 	dieInfo: Die
 	waferRadius: number
-	dieIndex: number
 	isSelected: boolean
 	itemWidth: number
 	itemHeight: number
@@ -63,6 +62,7 @@ export default memo(function SingleDie(props: SingleDieProps) {
 					)}
 
 					<rect
+						data-testid={id}
 						id={id}
 						x={positionX}
 						y={positionY}

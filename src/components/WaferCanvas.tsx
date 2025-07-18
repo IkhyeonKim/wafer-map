@@ -1,7 +1,7 @@
 "use client"
 
 import { Die } from "@/lib/Die"
-import SingleDie from "./SingleDie"
+import SingleDie from "./SingleDie/SingleDie"
 import Zoomable, { ZoomableHandle } from "./Zoomable"
 import { useAtomValue } from "jotai"
 import { selectedDieAtom } from "@/lib/dieAtoms"
@@ -25,6 +25,8 @@ export default function WaferCanvas({ dieInfo, mapSize }: WaferCanvasProps) {
 
 	const singleDieWidth = (CANVAS_SIZE - mapSize * GAP_WIDTH) / mapSize
 
+	console.log({ singleDieWidth })
+
 	const onResetZoom = () => {
 		zoomableRef.current?.setScale({
 			translateX: 0,
@@ -47,7 +49,7 @@ export default function WaferCanvas({ dieInfo, mapSize }: WaferCanvasProps) {
 					r={WAFER_RADIUS}
 					fill="#e3e3e3"
 				/>
-				{dieInfo.map((die, index) => {
+				{dieInfo.map((die) => {
 					return (
 						<SingleDie
 							key={die.id}
@@ -56,7 +58,6 @@ export default function WaferCanvas({ dieInfo, mapSize }: WaferCanvasProps) {
 							gap={GAP_WIDTH}
 							waferRadius={WAFER_RADIUS}
 							dieInfo={die}
-							dieIndex={index}
 							isSelected={die.id === selectedDie?.id}
 						/>
 					)

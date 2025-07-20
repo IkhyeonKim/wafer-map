@@ -25,8 +25,6 @@ export default function WaferCanvas({ dieInfo, mapSize }: WaferCanvasProps) {
 
 	const singleDieWidth = (CANVAS_SIZE - mapSize * GAP_WIDTH) / mapSize
 
-	console.log({ singleDieWidth })
-
 	const onResetZoom = () => {
 		zoomableRef.current?.setScale({
 			translateX: 0,

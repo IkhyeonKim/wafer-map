@@ -1,6 +1,6 @@
 import { Die } from "@/lib/Die"
 import DieListItem from "./DieListItem"
-import VirtualScrollList, { VirtualScrollHandle } from "./VirtualScorllList"
+import VirtualScrollList, { VirtualScrollHandle } from "./VirtualScroll/VirtualScrollList"
 import { useEffect, useRef } from "react"
 import { useAtomValue } from "jotai"
 import { selectedDieAtom } from "@/lib/dieAtoms"

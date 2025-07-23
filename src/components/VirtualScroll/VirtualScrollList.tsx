@@ -62,6 +62,7 @@ export default memo(
 					return {
 						scrollTo(position) {
 							if (parentRef.current) {
+								console.log('The element in parentRef is:', parentRef.current, '\n');
 								parentRef.current.scrollTo({
 									top: position,
 									left: 0,

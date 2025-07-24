@@ -18,6 +18,7 @@ type VirtualScrollProps = {
 	renderItemCount?: number
 	classNames?: string
 	intersectionCallback?: () => void
+	isControlled?: boolean
 }
 
 type VirtualScrollChildProp = {
@@ -44,6 +45,7 @@ export default memo(
 				renderItemCount = 20,
 				intersectionCallback,
 				classNames,
+				isControlled,
 			} = props
 
 			const [internalScrollHeight, setInternalScrollHeight] =
@@ -62,12 +64,14 @@ export default memo(
 					return {
 						scrollTo(position) {
 							if (parentRef.current) {
-								console.log('The element in parentRef is:', parentRef.current, '\n');
+								console.log("scrollTo", position, "\n")
 								parentRef.current.scrollTo({
 									top: position,
 									left: 0,
 									behavior: "smooth",
 								})
+
+								setInternalScrollHeight(position)
 							}
 						},
 					}
@@ -75,11 +79,14 @@ export default memo(
 				[]
 			)
 
-			const handleScroll: UIEventHandler<HTMLDivElement> = useCallback((ev) => {
-				ev.stopPropagation()
+			const handleScroll: UIEventHandler<HTMLDivElement> = useCallback(
+				(ev) => {
+					ev.stopPropagation()
 
-				setInternalScrollHeight(ev.currentTarget.scrollTop)
-			}, [])
+					if (!isControlled) setInternalScrollHeight(ev.currentTarget.scrollTop)
+				},
+				[isControlled]
+			)
 
 			const onScroll = useThrottle(handleScroll, 5)
 

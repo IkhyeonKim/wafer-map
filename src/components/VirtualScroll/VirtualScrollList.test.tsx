@@ -79,6 +79,7 @@ function VirtualScrollImperativeHarness() {
 					itemHeight={30}
 					renderItemCount={expectedRenderCount}
 					ref={virtualScrollRef}
+					isControlled={true}
 				>
 					{mockChildren}
 				</VirtualScrollList>
@@ -100,9 +101,12 @@ describe("Virtual scroll list", () => {
 		expect(renderedItems.length).toBe(expectedRenderCount)
 	})
 
-	it("should call scrollTo function", async () => {
+	it("should call scrollTo and display the correct items", async () => {
 		// Imperative Handle: Can you call the ref.current.scrollTo() method
 		// and then assert that the items being rendered have changed?
+
+		const scrollToMock = window.HTMLElement.prototype.scrollTo as jest.Mock
+		scrollToMock.mockClear()
 
 		render(
 			<Provider>
@@ -111,13 +115,20 @@ describe("Virtual scroll list", () => {
 		)
 
 		expect(screen.getByTestId("0")).toBeInTheDocument()
-		expect(screen.queryByTestId("29")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("40")).not.toBeInTheDocument()
 
 		const dieElement = screen.getByTestId("die-30,9")
 
 		fireEvent.click(dieElement)
 
-		const newItem = await screen.findByTestId("29")
+		expect(scrollToMock).toHaveBeenCalledTimes(1)
+		expect(scrollToMock).toHaveBeenCalledWith({
+			top: 900,
+			left: 0,
+			behavior: "smooth",
+		})
+
+		const newItem = await screen.findByTestId("40")
 		expect(newItem).toBeInTheDocument()
 
 		expect(screen.queryByTestId("0")).not.toBeInTheDocument()

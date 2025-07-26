@@ -102,9 +102,6 @@ describe("Virtual scroll list", () => {
 	})
 
 	it("should call scrollTo and display the correct items", async () => {
-		// Imperative Handle: Can you call the ref.current.scrollTo() method
-		// and then assert that the items being rendered have changed?
-
 		const scrollToMock = window.HTMLElement.prototype.scrollTo as jest.Mock
 		scrollToMock.mockClear()
 

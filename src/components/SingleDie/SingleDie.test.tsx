@@ -31,11 +31,8 @@ function SelectedDieDisplay() {
 }
 
 function SingleDieTestHarness() {
-	// 1. It subscribes to the global atom
 	const selected = useAtomValue(selectedDieAtom)
 
-	// 2. It renders the SingleDie and calculates the isSelected prop
-	//    based on the current atom value.
 	return (
 		<svg>
 			<SingleDie {...mockProps} isSelected={selected?.id === mockDie.id} />
@@ -47,8 +44,8 @@ const die1RenderSpy = jest.fn()
 const die2RenderSpy = jest.fn()
 
 type SpySingleDieProps = SingleDieProps & {
-    renderSpy: () => void;
-};
+	renderSpy: () => void
+}
 
 const SpyingSingleDie = memo(function spySingleDie({
 	renderSpy,
@@ -105,12 +102,9 @@ describe("Single Die Component", () => {
 				<SelectedDieDisplay />
 			</Provider>
 		)
-		// screen.debug()
-		// 2. Find the elements
 		const dieElement = screen.getByTestId("die-30,9")
 		const display = screen.getByTestId("selected-display")
 
-		// 3.
 		expect(display.textContent).toEqual("none")
 
 		fireEvent.click(dieElement)
@@ -124,20 +118,15 @@ describe("Single Die Component", () => {
 				<SingleDieTestHarness />
 			</Provider>
 		)
-		// screen.debug()
-		// 2. Find the elements
 		const dieElement = screen.getByTestId("die-30,9")
 		expect(dieElement).toHaveAttribute("fill", "#7b818a")
 
-		// 3. Fire the click event
 		fireEvent.click(dieElement)
 
-		// 4. Check the fill attribute is "#341ade"
 		expect(dieElement).toHaveAttribute("fill", "#341ade")
 	})
 
 	beforeEach(() => {
-		// Reset spies before each test
 		die1RenderSpy.mockClear()
 		die2RenderSpy.mockClear()
 	})
@@ -149,14 +138,14 @@ describe("Single Die Component", () => {
 			</Provider>
 		)
 
-        expect(die1RenderSpy).toHaveBeenCalledTimes(1);
-        expect(die2RenderSpy).toHaveBeenCalledTimes(1);
+		expect(die1RenderSpy).toHaveBeenCalledTimes(1)
+		expect(die2RenderSpy).toHaveBeenCalledTimes(1)
 
-        const die2Element = screen.getByTestId("die-30,10");
+		const die2Element = screen.getByTestId("die-30,10")
 
-        fireEvent.click(die2Element);
+		fireEvent.click(die2Element)
 
-        expect(die1RenderSpy).toHaveBeenCalledTimes(1);
-        expect(die2RenderSpy).toHaveBeenCalledTimes(2);
+		expect(die1RenderSpy).toHaveBeenCalledTimes(1)
+		expect(die2RenderSpy).toHaveBeenCalledTimes(2)
 	})
 })
